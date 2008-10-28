@@ -5,7 +5,7 @@ require 'json' # Get with "gem install json"
 require 'sinatra'
 
 #Load the configuration file
-config_file = File.expand_path(File.dirname(__FILE__) + "./config/config.yml")
+config_file = File.expand_path(File.dirname(__FILE__) + "../config/config.yml")
 $config = YAML::load_file(config_file)
 
 # Adhearsion must be running also. Type "ahn start ." from within this folder

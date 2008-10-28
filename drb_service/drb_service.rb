@@ -5,7 +5,7 @@ require 'activerecord'
 require File.expand_path(File.dirname(__FILE__) + "/models/pco_outboundservice.rb")
 
 #Load the configuration file
-config_file = File.expand_path(File.dirname(__FILE__) + "./config/config.yml")
+config_file = File.expand_path(File.dirname(__FILE__) + "../config/config.yml")
 $config = YAML::load_file(config_file)
 
 #Provide our database connection details from config.yml
