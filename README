@@ -57,6 +57,11 @@ P-Asserted-Identity: BURGERSHACK<sip:4155551212>
 
 If no space between BURGERSHACK and <sip:...> causes a problem for parsing the header by the downstream SIP component, then what we may do is set two channel variables on the active Asterisk call and then do the AddSipHeader in the dialplan. We will need to check this during testing.
 
+*The context for the PBX-Click-to-Call should be as follows:
+
+[pbx_click_to_call]
+exten => _X.,1,AGI(agi://localhost)
+exten => _X.,n,Hangup
 
 - Adhearsion Notes
 
