@@ -1,0 +1,66 @@
+v0.9j
+
+- Application Notes
+
+This Adhearsion application provides a mechanism for adding the SIP Header
+'P-Assert-Identity' which may be used to relate a custom CLI from the database
+on a call by call basis. The application works in the following way:
+
+1. On an outbound dial an AGI is called before the Dial command in extensions.conf
+2. That AGI then makes a request to the Adhearsion server running on a TCP socket
+3. Adhearsion then looks up CLI details from the database as follows:
+	- Obtains the prefix from the extension dialed (ie - 93134153331212, it would take 
+	313 to do the lookup)
+	- Looks up the prefix in PCO_OUTBOUNDSERVICE in field PHONEPREFIX
+	- Takes the outbound service name returned and splits by the '|' (ie - 'SERVICE NAME | 4155551212')
+	- Adds a SIP Header using the first field as the name and the second filed as the number 
+4. You may invoke asserted-identity/drb_service/refresh_cache.rb with 'ruby refresh_cache.rb' to 
+manually refresh the cache
+5. You may also now start the DRb Service as a *NIX daemon:
+	- ruby daemonize_drb_service.rb run
+	- ruby daemonize_drb_service.rb start
+	- ruby daemonize_drb_service.rb stop
+	- ruby daemonize_drb_service.rb restart
+6. It is possible to configure the app to either do a SipAddHeader directly over AGI, or to set
+variables and allow the Asterisk extensions.conf Dialplan to set the SipAddHeader
+	- May be toggled by setting this in asserted-policy/config/config.yml:
+		  - Options are:
+		    - CALLERID - Using the equivalent of 'Set(CALLERID=)
+		    - SIPADDHEADER - Use SipAddHeader
+		    - VARIABLES - Use the channel variables ASSERTED_NAME & ASSERTED_NUMBER
+				- ASSERTED_NAME == CallerID Name
+				- ASSERTED_NUMBER == CallerID Number
+7. It is also possible to configure a SIP From Domain in the SipAddHeader step:
+	- CustomConfig = { :assert_type => 'SIPADDHEADER', :from_domain => '@compassknowledge.com' }
+	
+These considerations must be made when configuring the environment for this application:
+
+1. Modify the database settings and cache timeout in path_to_project/config/config.yml
+2. The Outbound Service must always use a Prefix including the Switch Prefix 
+3. The prefix used must always be 3 digits long
+4. The Outbound Service name must always follow this format: NAME | 4155551212
+5. Do not forget to strip out the prefix before doing the dial in the Asterisk outbound context
+6. This app uses Distributed Ruby (http://rubyurl.com/93vN), so you must always start up the 
+application in this sequence:
+	- First run 'ruby path_to_project/drb_service/drb_service.rb'
+	- Then Adhearsion per the below
+	
+*Consideration for testing:
+
+Currently the system does adds a SIP Header (http://gist.github.com/17486) as follows:
+
+P-Asserted-Identity: BURGERSHACK<sip:4155551212>
+
+If no space between BURGERSHACK and <sip:...> causes a problem for parsing the header by the downstream SIP component, then what we may do is set two channel variables on the active Asterisk call and then do the AddSipHeader in the dialplan. We will need to check this during testing.
+
+
+- Adhearsion Notes
+
+Start your new app with "ahn start /path/to/your/app"
+
+If you wish to use Adhearsion to control Asterisk's dialplan,
+change the contexts you wish to be affected in your
+/etc/asterisk/extensions.conf file to the following:
+
+[your_context_name]
+exten => _X.,1,AGI(agi://1.2.3.4) ; This IP here

@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+# description: adhearsion manages Adhearsion
+#
+apps = [
+  {:app => 'asserted-identity'}
+]
+
+default_options = {
+  :app_dir => '/opt'
+}
+
+if ['stop', 'restart'].include? ARGV.first
+  apps.each do |app|
+    options = default_options.merge(app)
+    path = File.join options[:app_dir], options[:app]
+    puts "Stopping #{path}..."
+    `ruby /opt/asserted-identity/drb_service/daemonize_rest_webservice.rb stop`
+    `ruby /opt/asserted-identity/drb_service/daemonize_drb_service.rb stop`
+    `ahn stop ${path}`
+  end
+end
+
+if ['start', 'restart'].include? ARGV.first
+  apps.each do |app|
+    options = default_options.merge(app)
+    path = File.join options[:app_dir], options[:app]
+    puts "Starting #{options[:app]}"
+    `ruby /opt/asserted-identity/drb_service/daemonize_drb_service.rb start`
+    sleep 1
+    `ahn start daemon #{path}`
+    sleep 1
+    `ruby /opt/asserted-identity/drb_service/daemonize_rest_webservice.rb start`
+  end
+end
+
+unless ['start', 'stop', 'restart'].include? ARGV.first
+  puts "Usage: adhearsion {start|stop|restart}"
+  exit
+end
