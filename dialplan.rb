@@ -32,12 +32,26 @@ presence_agents_outbound {
     ahn_log.dialplan.debug("Could not find a related service for #{extension}, no CLI set")
     ahn_log.dialplan.debug(service.inspect)
   end
+  
+  if $config["apply_variable_cli"] == TRUE
+    dial_string = $config["dial_technology"] + "/" + 
+                  $config["dial_prefix"].to_s +
+                  extension.to_s.slice(4,extension.to_s.length) + "@" +
+                  $config["dial_trunk"]
+    dial(dial_string)
+  end
 }
 
 pbx_click_to_call {
-  #+presence_agents_outbound
-  dial_string = $config["dial_technology"] + "/" + 
-                extension.to_s.slice(3,extension.to_s.length) + "@" +
-                $onfig["dial_trunk"]
-  dial(dial_string)
+  #If we need to set the Variable CLI send it thorugh that context above, or dial within this context
+  if $config["apply_variable_cli"] == TRUE
+    +presence_agents_outbound
+  else
+    ahn_log.dialplan.debug("Destination to dial: " + extension.to_s)
+    dial_string = $config["dial_technology"] + "/" + 
+                  $config["dial_prefix"].to_s +
+                  extension.to_s + '@' +
+                  $config["dial_trunk"]
+    dial(dial_string)
+  end
 }
