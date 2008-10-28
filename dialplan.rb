@@ -19,7 +19,7 @@ presence_agents_outbound {
       #Add the custom SIP header P-Asserted-Identity from the last 10 characters of the Service Name
       raw_response("EXEC SipAddHeader " + 
                    "P-Asserted-Identity:" +   
-                   "#{service[:callerid_name]}<sip:#{service[:callerid_number]}#{$config["from_domain"]}>")
+                   "#{service[:callerid_name]}<sip:#{service[:callerid_number]}@#{$config["from_domain"]}>")
     when 'VARIABLES'
       #Simply add 2 channel variables that may then be used in the dialplan/extensions.conf
       set_variable("ASSERTED_NAME", service[:callerid_name])
