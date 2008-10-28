@@ -14,8 +14,8 @@ if ['stop', 'restart'].include? ARGV.first
     options = default_options.merge(app)
     path = File.join options[:app_dir], options[:app]
     puts "Stopping #{path}..."
-    `ruby /opt/asserted-identity/drb_service/daemonize_rest_webservice.rb stop`
-    `ruby /opt/asserted-identity/drb_service/daemonize_drb_service.rb stop`
+    `ruby /opt/presence-ahn-tools/drb_service/daemonize_rest_webservice.rb stop`
+    `ruby /opt/presence-ahn-tools/drb_service/daemonize_drb_service.rb stop`
     `ahn stop ${path}`
   end
 end
@@ -25,11 +25,11 @@ if ['start', 'restart'].include? ARGV.first
     options = default_options.merge(app)
     path = File.join options[:app_dir], options[:app]
     puts "Starting #{options[:app]}"
-    `ruby /opt/asserted-identity/drb_service/daemonize_drb_service.rb start`
+    `ruby /opt/presence-ahn-tools/drb_service/daemonize_drb_service.rb start`
     sleep 1
     `ahn start daemon #{path}`
     sleep 1
-    `ruby /opt/asserted-identity/drb_service/daemonize_rest_webservice.rb start`
+    `ruby /opt/presence-ahn-tools/drb_service/daemonize_rest_webservice.rb start`
   end
 end
 
