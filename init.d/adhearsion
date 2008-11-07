@@ -1,28 +1,20 @@
 #!/usr/bin/env ruby
-# bls This is a startup script for use in /etc/init.d
+# This is a startup script for use in /etc/init.d
 # chkconfig: 2345 90 20
-# description: Used to start and stop Adhearsion daemons
+# description: Used to start and stop Adhearsion
+require 'rubygems'
  
-APP_NAME = "ahn"
-@default_options = {
-  :name => 'presence-ahn-tools',
-  :app_dir => '/opt/presence-ahn-tools/',
-  :pid_file => '/var/run/presence-ahn-tools/adhearsion.pid'
-}
+APP_NAME = "ahnctl"
+BASE_DIR = "/opt/presence-ahn-tools"
  
 def start_app
-  puts "Starting #{@default_options[:name]}"
-  system("/usr/bin/ruby /opt/presence-ahn-tools/adhearsion/bin/ahnctl start #{@default_options[:app_dir]} 2>&1 >> /dev/null & echo $! > #{@default_options[:pid_file]} &")
+  puts "Starting #{APP_NAME}"
+  system("ahnctl start #{BASE_DIR}")
 end
  
 def stop_app
-  pid = File.read(@default_options[:pid_file])
-  puts "Stopping #{APP_NAME} with pid #{pid}"
-  begin
-    Process.kill(9, pid.to_i)
-  rescue => err
-  puts err
-  end
+  puts "Stopping #{APP_NAME}"
+  system("ahnctl stop #{BASE_DIR}")
 end
  
 case ARGV.first
@@ -31,6 +23,7 @@ case ARGV.first
   when 'stop'
   stop_app
   when 'restart'
+  puts "Re-starting #{APP_NAME}"
   stop_app
   start_app
 end

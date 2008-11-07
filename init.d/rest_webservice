@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+# This is a startup script for use in /etc/init.d
+# chkconfig: 2345 90 20
+# description: Used to start and stop the rest_webservice
+require 'rubygems'
+ 
+APP_NAME = "rest_webservice"
+BASE_DIR = "/opt/presence-ahn-tools"
+@default_options = {
+  :app_dir => "#{BASE_DIR}/#{APP_NAME}",
+  :pid_dir => "#{BASE_DIR}/#{APP_NAME}/pid",
+  :pid_file => "#{BASE_DIR}/#{APP_NAME}/pid/drb_service.pid",
+  :log_dir => "#{BASE_DIR}/#{APP_NAME}/log",
+  :log_file => "#{BASE_DIR}/#{APP_NAME}/log/drb_service.log"
+}
+ 
+def start_app
+  puts "Starting #{APP_NAME}"
+  system("ruby #{@default_options[:app_dir]}/#{APP_NAME}.rb 2>&1 >> #{@default_options[:log_file]} & echo $! > #{@default_options[:pid_file]} &")
+end
+ 
+def stop_app
+  pid = File.read(@default_options[:pid_file])
+  puts "Stopping #{APP_NAME} with pid #{pid}"
+  begin
+    Process.kill(9, pid.to_i)
+  rescue => err
+  puts err
+  end
+end
+ 
+case ARGV.first
+  when 'status'
+  begin
+    pid = File.read(@default_options[:pid_file])
+    pid_status = system("ps -p #{pid.to_i}")
+    if pid_status == TRUE
+      pid_status = "running with pid #{pid}"
+    else
+        pid_status = "not running"
+    end
+  rescue => err
+    puts 'No pid file present'
+  end
+  puts "Status of #{APP_NAME} is #{pid_status}"
+  when 'start'
+  start_app
+  when 'stop'
+  stop_app
+  when 'restart'
+  puts "Re-starting #{APP_NAME}"
+  stop_app
+  start_app
+end
+ 
+unless %w{start stop restart status}.include? ARGV.first
+  puts "Usage: #{APP_NAME} {start|status|stop|restart}"
+  exit
+end

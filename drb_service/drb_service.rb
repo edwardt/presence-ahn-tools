@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'thread'
 require 'yaml'
+#!/usr/bin/env ruby
+
 require 'activerecord'
 require File.expand_path(File.dirname(__FILE__) + "/models/pco_outboundservice.rb")
 
