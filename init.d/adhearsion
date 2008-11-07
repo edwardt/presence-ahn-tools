@@ -1,39 +1,41 @@
 #!/usr/bin/env ruby
-# description: adhearsion manages Adhearsion
-#
-apps = [
-  {:app => 'presence-ahn-tools'}
-]
-
-default_options = {
-  :app_dir => '/opt'
+# bls This is a startup script for use in /etc/init.d
+# chkconfig: 2345 90 20
+# description: Used to start and stop Adhearsion daemons
+ 
+APP_NAME = "ahn"
+@default_options = {
+  :name => 'presence-ahn-tools',
+  :app_dir => '/opt/presence-ahn-tools/',
+  :pid_file => '/var/run/presence-ahn-tools/adhearsion.pid'
 }
-
-if ['stop', 'restart'].include? ARGV.first
-  apps.each do |app|
-    options = default_options.merge(app)
-    path = File.join options[:app_dir], options[:app]
-    puts "Stopping #{path}..."
-    `ruby /opt/presence-ahn-tools/drb_service/daemonize_rest_webservice.rb stop`
-    `ruby /opt/presence-ahn-tools/rest_webservice/daemonize_drb_service.rb stop`
-    `ahn stop ${path}`
+ 
+def start_app
+  puts "Starting #{@default_options[:name]}"
+  system("/usr/bin/ruby /opt/presence-ahn-tools/adhearsion/bin/ahnctl start #{@default_options[:app_dir]} 2>&1 >> /dev/null & echo $! > #{@default_options[:pid_file]} &")
+end
+ 
+def stop_app
+  pid = File.read(@default_options[:pid_file])
+  puts "Stopping #{APP_NAME} with pid #{pid}"
+  begin
+    Process.kill(9, pid.to_i)
+  rescue => err
+  puts err
   end
 end
-
-if ['start', 'restart'].include? ARGV.first
-  apps.each do |app|
-    options = default_options.merge(app)
-    path = File.join options[:app_dir], options[:app]
-    puts "Starting #{options[:app]}"
-    `ruby /opt/presence-ahn-tools/drb_service/daemonize_drb_service.rb start`
-    sleep 1
-    `ahn start daemon #{path}`
-    sleep 1
-    `ruby /opt/presence-ahn-tools/rest_webservice/daemonize_rest_webservice.rb start`
-  end
+ 
+case ARGV.first
+  when 'start'
+  start_app
+  when 'stop'
+  stop_app
+  when 'restart'
+  stop_app
+  start_app
 end
-
-unless ['start', 'stop', 'restart'].include? ARGV.first
-  puts "Usage: adhearsion {start|stop|restart}"
+ 
+unless %w{start stop restart}.include? ARGV.first
+  puts "Usage: #{APP_NAME} {start|stop|restart}"
   exit
 end

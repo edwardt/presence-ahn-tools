@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+# bls This is a startup script for use in /etc/init.d
+# chkconfig: 2345 80 20
+# description: Used to start and stop the Stompserver Service
+ 
+APP_NAME = "drb_service"
+@default_options = {
+  :app_dir => '/opt/presence-ahn-tools/drb_service',
+  :pid_file => '/opt/presence-ahn-tools/drb_service/pid/drb_service.pid',
+  :log_dir => '/opt/presence-ahn-tools/drb_service/log/'
+}
+ 
+def start_app
+  puts "Starting #{APP_NAME}"
+  system("stompserver 2>&1 >> #{@default_options[:log_dir]}/drb_service.log")
+end
+ 
+def stop_app
+  pid = File.read(@default_options[:pid_file])
+  puts "Stopping #{APP_NAME} with pid #{pid}"
+  begin
+    Process.kill(9, pid.to_i)
+  rescue => err
+  puts err
+  end
+end
+ 
+case ARGV.first
+  when 'status'
+  pid = File.read(@default_options[:pid_file])
+  pid_status = system("ps -p #{pid.to_i}")
+  if pid_status == TRUE
+   pid_status = "running with pid #{pid}"
+    else
+      pid_status = "not running"
+  end
+  puts "Status of #{APP_NAME} is #{pid_status}"
+  when 'start'
+  start_app
+  when 'stop'
+  stop_app
+  when 'restart'
+  puts "Re-starting #{APP_NAME}"
+  stop_app
+  start_app
+end
+ 
+unless %w{start stop restart status}.include? ARGV.first
+  puts "Usage: #{APP_NAME} {start|stop|restart}"
+  exit
+end
