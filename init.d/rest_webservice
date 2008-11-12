@@ -17,11 +17,7 @@ BASE_DIR = "/opt/presence-ahn-tools"
  
 def start_app
   puts "Starting #{APP_NAME}"
-  system("ruby #{@default_options[:app_dir]}/#{APP_NAME}.rb -x -p 4567 -e production 2>&1 >> #{@default_options[:log_file]} & echo $! > #{@default_options[:pid_file]} &")
-  #file_to_run = @default_options[:app_dir] + "/" + APP_NAME + ".rb"
-  #Daemons.run_proc(file_to_run) do
-  #  exec "ruby #{file_to_run} -x -p 4567 -e production 2>&1 >> #{@default_options[:log_file]} & echo $! > #{@default_options[:pid_file]} &"
-  #end
+  system("nohup ruby #{@default_options[:app_dir]}/#{APP_NAME}.rb -x -p 4567 -e production 2>&1 >> #{@default_options[:log_file]} & echo $! > #{@default_options[:pid_file]} &")
 end
  
 def stop_app
