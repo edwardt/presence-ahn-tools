@@ -11,7 +11,7 @@ config_file = File.expand_path(File.dirname(__FILE__) + "/../config/config.yml")
 $config = YAML::load_file(config_file)
 
 # Adhearsion must be running also. Type "ahn start ." from within this folder
-Adhearsion = DRbObject.new_with_uri "druby://#{$config["ahn_drb_hostname"]}:#{$config["ahn_drb_port"]}"
+adhearsion = DRbObject.new_with_uri "druby://#{$config["ahn_drb_hostname"]}:#{$config["ahn_drb_port"]}"
 
 #Format the number in order to ensure it is for SIP or IAX2 or even TDM
 def format_source source
@@ -29,6 +29,6 @@ post "/call" do
               :timeout => 43200000,
               :async => false }
   #Return a JSON object with 'ok' to the calling application
-  Adhearsion.proxy.originate(options)
+  adhearsion.proxy.originate(options)
   { :dial_result => "ok" }.to_json
 end
