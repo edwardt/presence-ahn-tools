@@ -25,9 +25,8 @@ post "/call" do
               :context => $config["click_to_call_context"],
               :exten => params[:destination],
               :priority =>  1,
-              :variable =>'CLICKTOCALL=TRUE',
               :timeout => 43200000,
-              :async => false }
+              :async => $config["dial_async"] }
   #Return a JSON object with 'ok' to the calling application
   adhearsion.proxy.originate(options)
   { :dial_result => "ok" }.to_json
