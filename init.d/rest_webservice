@@ -9,9 +9,9 @@ BASE_DIR = "/opt/presence-ahn-tools"
 @default_options = {
   :app_dir => "#{BASE_DIR}/#{APP_NAME}",
   :pid_dir => "#{BASE_DIR}/#{APP_NAME}/pid",
-  :pid_file => "#{BASE_DIR}/#{APP_NAME}/pid/drb_service.pid",
+  :pid_file => "#{BASE_DIR}/#{APP_NAME}/pid/#{APP_NAME}.pid",
   :log_dir => "#{BASE_DIR}/#{APP_NAME}/log",
-  :log_file => "#{BASE_DIR}/#{APP_NAME}/log/drb_service.log"
+  :log_file => "#{BASE_DIR}/#{APP_NAME}/log/#{APP_NAME}.log"
 }
  
 def start_app
