@@ -26,7 +26,7 @@ ahn_drb_hostname: localhost
 ahn_drb_port: 9050
 channel_technology: SIP #This is the technology to use to dial the agent
 dial_technology: SIP #This is the technology to use to reach the outbound number
-dial_trunk: teliax
+dial_trunk: avaya
 dial_async: flase
 dial_prefix: 9
 dial_timeout: 43200000

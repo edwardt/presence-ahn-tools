@@ -20,8 +20,16 @@ end
 
 #Expose the RESTFful API via Sinatra web server
 post "/call" do  
+  
+  #Add the outbound trunk if it is present in the configuration
+  if $config["dial_trunk"] != nil
+    channel = format_source(params[:source]) + "@" + $config["dial_trunk"]
+  else
+    channel = format_source(params[:source])
+  end
+  
   #Build the options to place the call
-  options = { :channel => format_source(params[:source]),
+  options = { :channel => channel,
               :context => $config["click_to_call_context"],
               :exten => params[:destination],
               :priority =>  1,
