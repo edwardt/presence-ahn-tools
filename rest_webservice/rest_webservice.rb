@@ -12,7 +12,7 @@ $config = YAML::load_file(config_file)
 
 # Adhearsion must be running also. Type "ahn start ." from within this folder
 adhearsion = DRbObject.new_with_uri("druby://#{$config["ahn_drb_hostname"]}:#{$config["ahn_drb_port"]}")
-fetch_cli = DRbObject.new_with_uri("druby://#{$config["drb_hostname"]}:#{$config["drb_port"]}")
+@fetch_cli = DRbObject.new_with_uri("druby://#{$config["drb_hostname"]}:#{$config["drb_port"]}")
 
 #Format the number in order to ensure it is for SIP or IAX2 or Zap or even Local
 def format_source phone_number
@@ -41,7 +41,7 @@ def format_destination phone_number, serviceid
   end
 
   #Add the prefix for setting callerid
-  service = fetch_cli.get_service(serviceid)
+  service = @fetch_cli.get_service(serviceid)
   phone_number = service.phoneprefix + phone_number
   
   return phone_number
