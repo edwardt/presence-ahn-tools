@@ -50,7 +50,7 @@ pbx_click_to_call {
     ahn_log.dialplan.debug("Destination to dial: " + extension.to_s)
     dial_string = $config["destination_technology"] + "/" + 
                   extension.to_s + '@' +
-                  $config["dial_trunk"]
+                  $config["dial_trunk"] + "||r"
     dial(dial_string)
   end
 }
