@@ -72,6 +72,12 @@ class FetchCLI
     end
   end
   
+  #Method to get the serviceid details for the PBX click-to-call webservice
+  def get_service serviceid
+    service = PcoOutboundservice.find(:first, :conditions => ["ID = ?", "?" + serviceid])
+    return breakdown_cli_components(service.phoneprefix, service)
+  end
+  
   private 
   
   #Determine if the elapsed time since the cache was last dumped exceeds
