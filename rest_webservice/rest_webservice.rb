@@ -13,9 +13,15 @@ $config = YAML::load_file(config_file)
 # Adhearsion must be running also. Type "ahn start ." from within this folder
 adhearsion = DRbObject.new_with_uri "druby://#{$config["ahn_drb_hostname"]}:#{$config["ahn_drb_port"]}"
 
-#Format the number in order to ensure it is for SIP or IAX2 or even TDM
-def format_source source
-  return $config["source_technology"] + '/' + source.to_s
+#Format the number in order to ensure it is for SIP or IAX2 or Zap or even Local
+def format_source phone_number
+  #Add the outbound trunk if it is present in the configuration
+  if $config["dial_trunk"] != nil
+    phone_number = phone_number.to_s + "@" + $config["dial_trunk"].to_s
+  end
+  
+  phone_number = $config["source_technology"] + '/' + phone_number.to_s
+  return phone_number
 end
 
 #Verify the final dial string prepending the prefix and long distance code
@@ -26,11 +32,6 @@ def format_destination phone_number
     phone_number = $config["dial_prefix"].to_s + phone_number.to_s
   else
     phone_number = $config["dial_prefix"].to_s + $config["long_distance_prefix"].to_s + phone_number.to_s
-  end
-  
-  #Add the outbound trunk if it is present in the configuration
-  if $config["dial_trunk"] != nil
-    phone_number = phone_number.to_s + "@" + $config["dial_trunk"].to_s
   end
 
   return phone_number
