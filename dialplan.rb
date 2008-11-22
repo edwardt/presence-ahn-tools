@@ -48,8 +48,7 @@ pbx_click_to_call {
     +presence_agents_outbound
   else
     ahn_log.dialplan.debug("Destination to dial: " + extension.to_s)
-    dial_string = $config["dial_technology"] + "/" + 
-                  $config["dial_prefix"].to_s +
+    dial_string = $config["destination_technology"] + "/" + 
                   extension.to_s + '@' +
                   $config["dial_trunk"]
     dial(dial_string)
