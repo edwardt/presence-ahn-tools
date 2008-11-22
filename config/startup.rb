@@ -32,7 +32,7 @@ Adhearsion::Configuration.configure do |config|
   # To change the host IP or port on which the AGI server listens, use this:
   # config.enable_asterisk :listening_port => 4574, :listening_host => "127.0.0.1"
   
-  config.enable_drb :listening_port => 4575
+  config.enable_drb :listening_port => 9050
   
   # Streamlined Rails integration! The first argument should be a relative or absolute path to 
   # the Rails app folder with which you're integrating. The second argument must be one of the 
@@ -54,8 +54,8 @@ end
 Adhearsion::Initializer.start_from_init_file(__FILE__, File.dirname(__FILE__) + "/..")
 
 #Load the configuration file
-config_file = File.expand_path(File.dirname(__FILE__) + "/config.yml")
-$config = YAML::load_file(config_file)
+$config = YAML::load_file(File.expand_path(File.dirname(__FILE__) + "/config.yml"))
                  
-DRb.start_service
-$fetch_cli = DRbObject.new(nil, 'druby://localhost:9051')
+#DRb.start_service #Do we actually need this?
+#Connect to the DRb service for database lookups
+$fetch_cli = DRbObject.new_with_uri("druby://#{$config['drb_hostname']}:#{$config['drb_port']}")

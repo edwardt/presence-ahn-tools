@@ -74,7 +74,7 @@ class FetchCLI
   
   #Method to get the serviceid details for the PBX click-to-call webservice
   def get_service serviceid
-    service = PcoOutboundservice.find(:first, :conditions => ["ID = ?", "?" + serviceid])
+    service = PcoOutboundservice.find(:first, :conditions => ["ID = ?", serviceid])
     return breakdown_cli_components(service.phoneprefix, service)
   end
   

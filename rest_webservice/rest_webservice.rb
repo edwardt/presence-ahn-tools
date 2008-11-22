@@ -11,7 +11,8 @@ config_file = File.expand_path(File.dirname(__FILE__) + "/../config/config.yml")
 $config = YAML::load_file(config_file)
 
 # Adhearsion must be running also. Type "ahn start ." from within this folder
-adhearsion = DRbObject.new_with_uri "druby://#{$config["ahn_drb_hostname"]}:#{$config["ahn_drb_port"]}"
+adhearsion = DRbObject.new_with_uri("druby://#{$config["ahn_drb_hostname"]}:#{$config["ahn_drb_port"]}")
+fetch_cli = DRbObject.new_with_uri("druby://#{$config["drb_hostname"]}:#{$config["drb_port"]}")
 
 #Format the number in order to ensure it is for SIP or IAX2 or Zap or even Local
 def format_source phone_number
@@ -30,7 +31,7 @@ def format_source phone_number
 end
 
 #Verify the final dial string prepending the prefix and long distance code
-def format_destination phone_number
+def format_destination phone_number, serviceid
   #See if the number is on the exception list and then either add only a dial prefix if it is
   #or a long distance prefix if it is not
   if phone_number.to_s.match($config["exception_list"])
@@ -39,6 +40,10 @@ def format_destination phone_number
     phone_number = $config["dial_prefix"].to_s + $config["long_distance_prefix"].to_s + phone_number.to_s
   end
 
+  #Add the prefix for setting callerid
+  service = fetch_cli.get_service(serviceid)
+  phone_number = service.phoneprefix + phone_number
+  
   return phone_number
 end
 
@@ -46,7 +51,7 @@ end
 post "/call" do  
   
   source = format_source(params[:source])
-  destination = format_destination(params[:destination])
+  destination = format_destination(params[:destination], params[:serviceid])
   
   #Build the options to place the call
   options = { :channel => source,
