@@ -15,9 +15,14 @@ adhearsion = DRbObject.new_with_uri "druby://#{$config["ahn_drb_hostname"]}:#{$c
 
 #Format the number in order to ensure it is for SIP or IAX2 or Zap or even Local
 def format_source phone_number
-  #Add the outbound trunk if it is present in the configuration
-  if $config["dial_trunk"] != nil
-    phone_number = phone_number.to_s + "@" + $config["dial_trunk"].to_s
+  #If it is a local call we need to handle it a bit differently than other technologies
+  if $config["source_technology"] == 'Local'
+    phone_number = phone_number.to_s + "@" + $config["local_context"].to_s
+  else
+    #Add the outbound trunk if it is present in the configuration
+    if $config["dial_trunk"] != nil
+      phone_number = phone_number.to_s + "@" + $config["dial_trunk"].to_s
+    end
   end
   
   phone_number = $config["source_technology"] + '/' + phone_number.to_s
