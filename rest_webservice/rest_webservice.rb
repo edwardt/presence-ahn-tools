@@ -42,7 +42,7 @@ def format_destination phone_number, serviceid
 
   #Add the prefix for setting callerid
   service = @@fetch_cli.get_service(serviceid)
-  phone_number = service[:prefix].slice(1,3) + phone_number
+  phone_number = '0' + service[:prefix].slice(1,3) + phone_number
   
   return phone_number
 end
@@ -55,7 +55,7 @@ post "/call" do
   
   #Build the options to place the call
   options = { :channel => source,
-              :context => $config["click_to_call_context"],
+              :context => $config["destination_click_to_call"], #$config["click_to_call_context"],
               :exten => destination,
               :priority =>  1,
               :timeout => 43200000,

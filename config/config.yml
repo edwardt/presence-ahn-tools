@@ -20,7 +20,6 @@ assert_type: SIPADDHEADER
 from_domain: mydomain.com
 
 #Details for PBX Click to Call
-click_to_call_context: pbx_click_to_call #Ensure this is in the Asterisk dialplan and calls an AGI
 ahn_drb_hostname: localhost
 ahn_drb_port: 9050
 source_technology: Local #This is the technology to use to dial the agent, may be SIP, IAX or Local

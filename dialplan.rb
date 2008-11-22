@@ -34,18 +34,6 @@ presence_agents_outbound {
   end
 }
 
-pbx_click_to_call {
-  ahn_log.dialplan.debug("Destination to dial: " + extension.to_s)
-  if $config["destination_technology"] == 'Local'
-    dial_string = dial_string + $config["destination_technology"]
-  else
-    dial_string = $config["destination_technology"] + "/" +  
-                  extension.to_s + '@' +
-                  $config["dial_trunk"] + "||r"
-  end
-  dial(dial_string)
-}
-
 destination_click_to_call {
-  +presence_outbound_agents
+  +presence_agents_outbound
 }
