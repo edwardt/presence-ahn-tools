@@ -55,7 +55,7 @@ post "/call" do
   
   #Build the options to place the call
   options = { :channel => source,
-              :context => $config["destination_click_to_call"], #$config["click_to_call_context"],
+              :context => $config["local_destination_context"], #$config["click_to_call_context"],
               :exten => destination,
               :priority =>  1,
               :timeout => 43200000,
