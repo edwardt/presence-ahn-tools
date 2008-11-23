@@ -1,10 +1,12 @@
-Presence AHN Tools - v0.9h
+Presence AHN Tools - v0.10
 
 - Applications
 	- Variable CallerID
 	- RESTful Click-to-Call Webservice for PBX only calls
-	
-- Application Notes
+
+=====
+
+- Application Notes for Variable CallerID
 
 This Adhearsion application provides a mechanism for adding the SIP Header
 'P-Assert-Identity' which may be used to relate a custom CLI from the database
@@ -25,7 +27,15 @@ manually refresh the cache
 	- ruby daemonize_drb_service.rb start
 	- ruby daemonize_drb_service.rb stop
 	- ruby daemonize_drb_service.rb restart
-6. It is possible to configure the app to either do a SipAddHeader directly over AGI, or to set
+6. Or as init.d scripts
+	- /etc/init.d/drb_service start
+	- /etc/init.d/adhearsion start
+	- /etc/init.d/rest_webservice start
+7. Or as init.d scripts
+	- /etc/init.d/drb_service start
+	- /etc/init.d/adhearsion start
+	- /etc/init.d/rest_webservice start
+8. It is possible to configure the app to either do a SipAddHeader directly over AGI, or to set
 variables and allow the Asterisk extensions.conf Dialplan to set the SipAddHeader
 	- May be toggled by setting this in asserted-policy/config/config.yml:
 		  - Options are:
@@ -34,7 +44,7 @@ variables and allow the Asterisk extensions.conf Dialplan to set the SipAddHeade
 		    - VARIABLES - Use the channel variables ASSERTED_NAME & ASSERTED_NUMBER
 				- ASSERTED_NAME == CallerID Name
 				- ASSERTED_NUMBER == CallerID Number
-7. It is also possible to configure a SIP From Domain in the SipAddHeader step:
+8. It is also possible to configure a SIP From Domain in the SipAddHeader step:
 	- CustomConfig = { :assert_type => 'SIPADDHEADER', :from_domain => '@compassknowledge.com' }
 	
 These considerations must be made when configuring the environment for this application:
@@ -55,13 +65,30 @@ Currently the system does adds a SIP Header (http://gist.github.com/17486) as fo
 
 P-Asserted-Identity: BURGERSHACK<sip:4155551212>
 
-If no space between BURGERSHACK and <sip:...> causes a problem for parsing the header by the downstream SIP component, then what we may do is set two channel variables on the active Asterisk call and then do the AddSipHeader in the dialplan. We will need to check this during testing.
+=====
+
+- Application Notes for RESTful Click-to-Call Web Service
+
+The web service may be invoked as follows:
+
+http://localhost:4567/call/destination=4155551212&source=303&serviceid=8000
 
 *The context for the PBX-Click-to-Call should be as follows:
 
-[pbx_click_to_call]
-exten => _X.,1,AGI(agi://localhost)
+[local_click_to_call]
+exten => _X.,1,Dial(SIP/${EXTEN})@trunk)
 exten => _X.,n,Hangup
+;Context for the customer connection
+[destination_click_to_call]
+exten => _X.,1,AGI(agi://localhost)
+exten => _X.,n,Dial(SIP/${EXTEN:4}@trunk||r)
+exten => _X.,n,Hangup
+
+A screencast may be seen here:
+
+http://video.google.com/a/presenceco.com/?tab=mv#/Play/contentId=908fa999b299309e
+
+=====
 
 - Adhearsion Notes
 
