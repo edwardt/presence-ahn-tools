@@ -31,6 +31,7 @@ dial_async: false
 dial_timeout: 43200000
 dial_prefix: 9
 long_distance_prefix: 1
+allow_11_digit_dialing: true
 
 #List of NPANXXs that are not long distance, should be a regular expression and may have multiple NPANXXs
 #delimtted by a pipe '|' as you may see below. The configuration file is only read at daemon start time

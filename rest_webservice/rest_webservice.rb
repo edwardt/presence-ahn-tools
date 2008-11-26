@@ -32,12 +32,18 @@ end
 
 #Verify the final dial string prepending the prefix and long distance code
 def format_destination phone_number, serviceid
-  #See if the number is on the exception list and then either add only a dial prefix if it is
-  #or a long distance prefix if it is not
-  if phone_number.to_s.match($config["exception_list"])
+    
+  #If 11-digit numbers simply pass with a 9 pre-pended to allow for 1 + 10 digits from the api request
+  if $config["allow_11_digit_dialing"] == true && phone_number.to_s.length == 11
     phone_number = $config["dial_prefix"].to_s + phone_number.to_s
   else
-    phone_number = $config["dial_prefix"].to_s + $config["long_distance_prefix"].to_s + phone_number.to_s
+    #See if the number is on the exception list and then either add only a dial prefix if it is
+    #or a long distance prefix if it is not
+    if phone_number.to_s.match($config["exception_list"])
+      phone_number = $config["dial_prefix"].to_s + phone_number.to_s
+    else
+      phone_number = $config["dial_prefix"].to_s + $config["long_distance_prefix"].to_s + phone_number.to_s
+    end
   end
 
   #Add the prefix for setting callerid
